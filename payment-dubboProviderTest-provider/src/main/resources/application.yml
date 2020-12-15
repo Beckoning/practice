@@ -1,0 +1,31 @@
+dubbo:
+  application:
+    name: payment-dubboProviderTest-provider
+  registry:
+    address: zookeeper://10.22.31.103:2181?backup=10.22.31.116:2181,10.22.31.123:2181
+    # 读者请自行更改zookeeper地址
+    protocol: zookeeper
+    check: false
+  protocol:
+    name: dubbo
+    port: 30003
+  monitor:
+    protocol: register
+  consumer:
+    check: false
+    timeout: 3000
+  metadata-report:
+    address: zookeeper://10.22.31.103:2181?backup=10.22.31.116:2181,10.22.31.123:2181
+    retry-times: 30
+    retry-period: 5000
+    cycle-report: false
+
+server:
+  port: 8063
+
+
+
+
+
+
+

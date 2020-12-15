@@ -1,0 +1,59 @@
+dubbo:
+  application:
+    name: payment-mq-provider
+  registry:
+    address: zookeeper://106.55.159.72:2181
+    # 读者请自行更改zookeeper地址
+    protocol: zookeeper
+    check: false
+  protocol:
+    name: dubbo
+    port: 30003
+  monitor:
+    protocol: register
+  consumer:
+    check: false
+    timeout: 3000
+  metadata-report:
+    address: zookeeper://106.55.159.72:2181
+    retry-times: 30
+    retry-period: 5000
+    cycle-report: false
+
+server:
+  port: 8063
+
+#kafka 配置
+kafka:
+  consumer:
+    zookeeper.connect: 106.55.159.72:2181
+    servers: 106.55.159.72:9092
+    enable.auto.commit: true
+    session.timeout: 6000
+    auto.commit.interval: 100
+    auto.offset.reset: latest
+    topic: test
+    group.id: test
+    concurrency: 2
+  producer:
+    servers: 106.55.159.72:9092
+    retries: 0
+    batch.size: 4096
+    linger: 1
+    buffer.memory: 40960
+
+spring:
+  main:
+    web-application-type: servlet
+#spring:
+#  activemq:
+#    broker-url: failover:(tcp://10.22.31.23:61616)?randomize=false&timeout=3000
+#    pool:
+#      enabled: true
+#      max-connections: 30
+#  in-memory: true
+
+
+
+
+

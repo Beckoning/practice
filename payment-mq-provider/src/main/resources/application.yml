@@ -1,0 +1,47 @@
+dubbo:
+  application:
+    name: payment-mq-provider
+  registry:
+    address: zookeeper://10.22.31.103:2181?backup=10.22.31.116:2181,10.22.31.123:2181
+    # 读者请自行更改zookeeper地址
+    protocol: zookeeper
+    check: false
+  protocol:
+    name: dubbo
+    port: 30003
+  monitor:
+    protocol: register
+  consumer:
+    check: false
+    timeout: 3000
+  metadata-report:
+    address: zookeeper://10.22.31.103:2181?backup=10.22.31.116:2181,10.22.31.123:2181
+    retry-times: 30
+    retry-period: 5000
+    cycle-report: false
+
+server:
+  port: 8063
+
+#mq 配置
+rocketmq:
+  name-server: 10.22.31.103:9876;10.22.31.116:9876
+  sendMessageTimeout: 300000
+  producer:
+    group: pay
+
+spring:
+  main:
+    web-application-type: servlet
+#spring:
+#  activemq:
+#    broker-url: failover:(tcp://10.22.31.23:61616)?randomize=false&timeout=3000
+#    pool:
+#      enabled: true
+#      max-connections: 30
+#  in-memory: true
+
+
+
+
+
