@@ -645,12 +645,14 @@ public class EsQuery {
 //                .addUnboundedTo("2020-12-07"));
 
         //ip聚合  text 字段类型不能进行分组  如果text字段需要进行分组 需要修改参数类型将ipAddr修改为ipAddr.keyword
-
-        //TODO 未验证通过
-        builder.aggregation(AggregationBuilders.ipRange("agg").field("ipAddr.keyword")
+        //查询ip范围时 字段保存类型使用ip
+        // .startObject("ipAddr")
+        //     .field("type","ip")
+        // .endObject()
+        builder.aggregation(AggregationBuilders.ipRange("agg").field("ipAddr")
                 .addRange("0.0.0.1","127.0.0.1")
                 .addUnboundedFrom("127.0.0.1")
-                .addUnboundedTo("127.0.0.1"));
+                .addUnboundedTo("127.0.0.2"));
 
         searchRequest.source(builder);
         SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
