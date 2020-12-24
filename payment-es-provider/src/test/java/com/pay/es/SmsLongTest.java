@@ -29,8 +29,8 @@ import java.util.Date;
 public class SmsLongTest {
 
     RestHighLevelClient restHighLevelClient =  ElasticSearchClient.getClient();
-    String index = "sms-record-index";
-    String type = "sms-record-type";
+    String index = "sms-logs-index";
+    String type = "sms-logs-type";
 
     /**
      * 新增索引

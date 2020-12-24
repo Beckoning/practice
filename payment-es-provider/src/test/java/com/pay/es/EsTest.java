@@ -157,15 +157,17 @@ public class EsTest {
     @Test
     public void updateDocTest() throws Exception{
 
-        String index = "person";
-        String type = "man";
+//        String index = "person";
+//        String type = "man";
+        String index = "sms-logs-index";
+        String type = "sms-logs-type";
 
         Map<String,Object> map = new HashMap<>();
-        map.put("name","李四");
+        map.put("smsContent","huang  mill lane  ming zh da");
 
 
         //准备Resquest对象
-        UpdateRequest updateRequest = new UpdateRequest(index,type,"1");
+        UpdateRequest updateRequest = new UpdateRequest(index,type,"14");
         updateRequest.doc(map);
 
         //通过client执行添加

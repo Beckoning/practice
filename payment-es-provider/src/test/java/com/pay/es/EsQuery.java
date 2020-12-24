@@ -19,7 +19,11 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.avg.ParsedAvg;
 import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
+import org.elasticsearch.search.aggregations.metrics.max.ParsedMax;
 import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -51,6 +55,9 @@ public class EsQuery {
      * 查询时：一个字段对应多个值
      *
      * 这种查询适合keyword 、numeric、date
+     * term查询keword字段 term不会分词，而keyword字段也不会分词。所以需要完全匹配
+     * term查询text字段 term不会分词 而text字段会分词 因此term查询必须为text分词后的某一个词组
+     *
      * @throws Exception
      */
     @Test
@@ -130,6 +137,35 @@ public class EsQuery {
 
     }
 
+
+    /**
+     * 匹配词组
+     * match_phrase 匹配keword和term匹配keword字段一样，必须一致才行
+     * match_phrase匹配text字段：match_phrase的分词结果必须在text字段分词中都包含，并且顺序必须相同，而且必须都是连续的
+     *
+     * @throws Exception
+     */
+    @Test
+    public void matchPhraseQueryTest() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.from(0);
+        builder.size(10);
+
+        builder.query(QueryBuilders.matchPhraseQuery("smsContent","huang ming"));
+
+        searchRequest.source(builder);
+
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+        for (SearchHit searchHit : searchResponse.getHits().getHits()){
+            System.out.println(searchHit.getSourceAsMap());
+        }
+
+    }
     /**
      * es查询 一个值可以对应多个字段
      *
@@ -165,7 +201,7 @@ public class EsQuery {
     @Test
     public void getByIdQueryTest() throws Exception{
 
-        GetRequest getRequest = new GetRequest(index,type,"1");
+        GetRequest getRequest = new GetRequest(index,type,"14");
 
         GetResponse getResponse =  restHighLevelClient.get(getRequest,RequestOptions.DEFAULT);
 
@@ -294,6 +330,7 @@ public class EsQuery {
         builder.size(10);
 
         builder.query(QueryBuilders.rangeQuery("free").gte(5).lte(5));
+
 
         searchRequest.source(builder);
 
@@ -603,6 +640,8 @@ public class EsQuery {
 
         //去重复  使用聚合查询的方式
         builder.aggregation(AggregationBuilders.cardinality("agg").field("province"));
+//        builder.aggregation(AggregationBuilders.max("agg").field("free"));
+
         searchRequest.source(builder);
         SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
 //        for (SearchHit hit : searchResponse.getHits().getHits()) {
@@ -612,7 +651,7 @@ public class EsQuery {
 //        }
 
 
-        System.out.println(((Cardinality)searchResponse.getAggregations().get("agg")).getValue());
+        System.out.println(((ParsedMax)searchResponse.getAggregations().get("agg")).getValue());
     }
 
 
@@ -701,4 +740,37 @@ public class EsQuery {
 
 
     }
+
+
+    /**
+     * 查询按照城市分组
+     * @throws Exception
+     */
+    @Test
+    public void cityGroupQueryTest() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+
+        builder.aggregation(AggregationBuilders.terms("agg").field("province")
+                .subAggregation(AggregationBuilders.avg("avg").field("free")));
+
+
+        searchRequest.source(builder);
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+
+        ParsedStringTerms parsedStringTerms  = searchResponse.getAggregations().get("agg");
+
+        for(Terms.Bucket parsedBucket: parsedStringTerms.getBuckets()){
+//            System.out.println(((ParsedStringTerms.ParsedBucket) parsedBucket).getKeyAsNumber());
+            System.out.println(parsedBucket.getKeyAsString() + "————" +parsedBucket.getDocCount()+"----"+((ParsedAvg)parsedBucket.getAggregations().get("avg")).getValue());
+
+        }
+
+    }
+
 }
