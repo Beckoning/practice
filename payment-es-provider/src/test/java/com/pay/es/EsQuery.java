@@ -24,6 +24,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.avg.ParsedAvg;
 import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 import org.elasticsearch.search.aggregations.metrics.max.ParsedMax;
+import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -47,6 +48,32 @@ public class EsQuery {
     RestHighLevelClient restHighLevelClient =  ElasticSearchClient.getClient();
     String index = "sms-logs-index";
     String type = "sms-logs-type";
+
+
+    //QueryBuilders的使用
+    /**
+     * QueryBuilders:
+     *     boolQuery:
+     *         must:相当于sql的and
+     *         must not:相当于sql的not
+     *         should:相当于sql的or
+     *     mathcquery:单个匹配
+     *     mathcAllQuery:匹配所有
+     *     termQuery:termQuery("key", obj) 完全匹配 ;termsQuery("key", obj1, obj2..)  一次匹配多个值
+     *     multiMatchQuery:multiMatchQuery("text", "field1", "field2"..);  匹配多个字段, field有通配符忒行
+     *     idsQuery:构造一个只会匹配的特定数据 id 的查询
+     *     constantScoreQuery:看了一下这个类的构造函数ConstantScoreQuery(Filter filter) ，我的理解就是通过构造filter来完成文档的过滤，并且返回一个复合当前过滤条件的文档的常量分数，这个分数等于为查询条件设置的boost
+     *     fuzzyQuery:模糊查询
+     *     moreLikeThisQuery:文档中的文本查询
+     *     prefixQuery:前缀查询
+     *     rangeQuery:在一个范围内查询相匹配的文档
+     *     termQuery:一个查询相匹配的文件包含一个术语
+     *     termsQuery:一个查询相匹配的多个value---minimumMatch(1); // 设置最小数量的匹配提供了条件。默认为1。
+     *     wildcardQuery:通配符查询
+     *     nestedQuery:嵌套查询---scoreMode("total");// max, total, avg or none
+     *     disMaxQuery:对子查询的结果做union, score沿用子查询score的最大值,
+     *     spanFirstQuery:跨度查询,还包括(spanNearQuery,spanNotQuery,spanOrQuery,spanTermQuery)
+     */
 
 
     /**
@@ -651,7 +678,7 @@ public class EsQuery {
 //        }
 
 
-        System.out.println(((ParsedMax)searchResponse.getAggregations().get("agg")).getValue());
+        System.out.println(((Cardinality)searchResponse.getAggregations().get("agg")).getValue());
     }
 
 
@@ -772,5 +799,63 @@ public class EsQuery {
         }
 
     }
+
+    /**
+     * 最大值查询
+     * @throws Exception
+     */
+    @Test
+    public void maxQueryTest() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+
+        builder.aggregation(AggregationBuilders.max("max").field("free").missing(19.0));
+
+
+        searchRequest.source(builder);
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+
+        ParsedMax parsedMax  = searchResponse.getAggregations().get("max");
+
+        System.out.println(parsedMax.getValue());
+
+    }
+
+
+    @Test
+    public void constantScoreQueryTest() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+
+        builder.query(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("province","河南")));
+
+
+        searchRequest.source(builder);
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+
+
+
+        searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.termQuery("province","河南"));
+        searchRequest.source(builder);
+        SearchResponse searchResponse2 = restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+    }
+
+
+
 
 }

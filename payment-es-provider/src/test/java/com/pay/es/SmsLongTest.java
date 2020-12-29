@@ -118,7 +118,7 @@ public class SmsLongTest {
 
         BulkRequest bulkRequest = new BulkRequest();
         //准备数据
-        for (int i=1; i<20;i++) {
+        for (int i=20; i<28;i++) {
             int status = i % 2;
             int operatorId = i % 3;
             int provinceId = i % 5;
