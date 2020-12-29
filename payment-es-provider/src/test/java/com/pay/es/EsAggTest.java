@@ -11,6 +11,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +115,6 @@ public class EsAggTest {
     @Test
     public void dateHistogramTest()throws Exception{
 
-
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
@@ -124,6 +125,34 @@ public class EsAggTest {
 
 
         SearchResponse searchResponse =  restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+
+
+    }
+
+
+    /**
+     * 嵌套聚合 TODO
+     *
+     * @throws Exception
+     */
+    @Test
+    public void nestedTest()throws Exception{
+
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        NestedAggregationBuilder nb= AggregationBuilders.nested("negsted_path","quests");
+
+        TermsAggregationBuilder tb=  AggregationBuilders.terms("group_name").field("quests.province");
+        nb.subAggregation(tb );
+        searchSourceBuilder.aggregation(nb);
+
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
 
     }
 
