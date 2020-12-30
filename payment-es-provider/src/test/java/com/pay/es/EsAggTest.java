@@ -109,7 +109,7 @@ public class EsAggTest {
 
     /**
      * 按日期间隔分组,年、月、日、小时、分钟、秒
-     *
+     * dateHistogram日期直方图 📊
      * @throws Exception
      */
     @Test
