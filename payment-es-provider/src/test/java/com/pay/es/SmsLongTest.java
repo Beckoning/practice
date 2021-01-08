@@ -106,6 +106,32 @@ public class SmsLongTest {
     }
 
 
+    //true: 遇到陌生字段就进行dynamic mapping  陌生字段就是新增的document字段信息和mapping中的字段信息不匹配
+    //false: 遇到陌生字段就忽略
+    //strict: 遇到陌生字段，就报错
+    /**
+     * PUT /test_index
+     * {
+     *
+     *   "mappings": {
+     *     "_doc":{
+     *     "dynamic": "strict",
+     *
+     *     "properties": {
+     *       "title": {
+     *         "type": "text"
+     *         },
+     *       "address": {
+     *         "type": "object",
+     *         "dynamic":"true"
+     *         }
+     *     }
+     *     }
+     *
+     *   }
+     * }
+     */
+
 
     /**
      * 批量添加

@@ -18,6 +18,8 @@ import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.range.ParsedRange;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -193,6 +195,9 @@ public class EsQuery {
         }
 
     }
+
+
+
     /**
      * es查询 一个值可以对应多个字段
      *
@@ -856,6 +861,101 @@ public class EsQuery {
     }
 
 
+    /**
+     * 计算每个province下free的平均值，并且按照平均价格降序排列
+     * 即：根据聚合后桶里的值进行排序
+     */
+    @Test
+    public void provinceFreeAvgAndOrderByAvgFreeDescTest() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        //根据mapping中的值进行排序
+//        builder.sort("avg_free",SortOrder.DESC);
+
+        //order(BucketOrder.aggregation("avg_free",false)) 根据聚合后的值进行排序
+        builder.aggregation(AggregationBuilders.terms("group_by_province").field("province").order(BucketOrder.aggregation("avg_free",false)).subAggregation(AggregationBuilders.avg("avg_free").field("free")));
+
+
+        searchRequest.source(builder);
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+
+    }
+
+
+    /**
+     * 按照free进行值区间分组，然后在分组内进行province分组 然后在计算每个分组的free的平均值
+     *
+     *
+     range :1.0-10.0
+         天津
+         avg_free_6.5
+         河南
+         avg_free_5.5
+         上海
+         avg_free_5.0
+         湖南
+         avg_free_4.5
+         北京
+         avg_free_3.5
+     range :10.0-20.0
+         天津
+         avg_free_16.5
+         河南
+         avg_free_15.5
+         湖南
+         avg_free_14.5
+         北京
+         avg_free_13.5
+         上海
+         avg_free_12.5
+     range :20.0-*
+         湖南
+         avg_free_24.5
+         天津
+         avg_free_24.0
+         北京
+         avg_free_23.5
+         河南
+         avg_free_23.0
+         上海
+         avg_free_22.5
+     * @throws Exception
+     */
+    @Test
+    public void freeRangeGroupAndProvinceGroup() throws Exception{
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        searchRequest.types(type);
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+        builder.aggregation(AggregationBuilders.range("group_by_free").field("free").addRange(1,10).addRange(10,20).addUnboundedFrom(20)
+        .subAggregation(AggregationBuilders.terms("group_by_province").field("province").order(BucketOrder.aggregation("avg_free",false)).subAggregation(AggregationBuilders.avg("avg_free").field("free"))));
+
+
+        searchRequest.source(builder);
+        SearchResponse searchResponse =  restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+        ParsedRange parsedRange = searchResponse.getAggregations().get("group_by_free");
+
+
+        System.out.println();
+        parsedRange.getBuckets().forEach(
+                t->{
+                    System.out.println("range :"+t.getKeyAsString());
+                    ((ParsedStringTerms)t.getAggregations().get("group_by_province")).getBuckets().forEach(m->{
+                        System.out.println(m.getKeyAsString());
+                        ParsedAvg parsedAvg =  ((ParsedAvg)m.getAggregations().get("avg_free"));
+                        System.out.println(parsedAvg.getName() + "_"+parsedAvg.getValue());
+                    });
+                }
+        );
+
+    }
 
 
 }
