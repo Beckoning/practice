@@ -41,5 +41,19 @@ public class MigrateMapTestMain {
          * 总结：
          * 运行结果可以知道，当map再调用get的时候如果根据key值获取不到value时，会触发function，执行apply方法。
          */
+
+
+        //运行结果
+        /**
+         * testa
+         * testb
+         * create:c
+         * create:d
+         *
+         * Process finished with exit code 0
+         *
+         *
+         * 从运行结果可以知道，当map再调用get的时候如果根据key值获取不到value时，会触发function，执行apply方法，并获取apply返回的值。
+         */
     }
 }
