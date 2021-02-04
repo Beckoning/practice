@@ -20,12 +20,11 @@ public class DisruptorTestMain {
         /**
          * 定义Disruptor，基于单生产者，阻塞策略
          */
-        Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(eventFactory,bufferSize, Executors.defaultThreadFactory(), ProducerType.MULTI,new BlockingWaitStrategy());
+        Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(eventFactory,bufferSize, Executors.defaultThreadFactory(), ProducerType.SINGLE,new BlockingWaitStrategy());
         /////////////////////////////////////////////////////////////////////
         parallelWithOnePool(disruptor);//这里是调用各种不同方法的地方.
         /////////////////////////////////////////////////////////////////////
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
-        RingBuffer<LongEvent> ringBuffer1 = disruptor.getRingBuffer();
 
         /**
          * 输入10
@@ -35,10 +34,7 @@ public class DisruptorTestMain {
 
         }
 
-        for (int i=10;i<11;i++){
-            ringBuffer1.publishEvent(new LongEventTranslator(),Long.parseLong(i+""));
 
-        }
 
 
 
