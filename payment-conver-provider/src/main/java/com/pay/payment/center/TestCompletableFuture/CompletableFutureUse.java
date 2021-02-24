@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class CompletableFutureUse {
 
@@ -134,6 +135,7 @@ public class CompletableFutureUse {
         }, threadPool);
 
         System.out.println(future.get());
+
     }
 
 
@@ -361,21 +363,21 @@ public class CompletableFutureUse {
 
         //任务执行完回调 无返回值  异步
         //执行线程：如果不使用线程池线程为ForkJoinPool.commonPool中的线程（JDK）
-//        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-//            System.out.println("开始 [ " + Thread.currentThread().getName());
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-////            int i = 10 / 0;
-//            System.out.println("结束 [ " + Thread.currentThread().getName());
-//            return "Sb";
-//        }, threadPool).whenCompleteAsync((result,exception)-> {
-//            System.out.println("异步任务结束触发回调 [ " + Thread.currentThread().getName());
-//            System.out.println("上一级任务结果为： " + result);
-//            System.out.println("上一级任务异常为: " + exception);
-//        }).exceptionally((exception) -> {return "SB失败";});
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+            System.out.println("开始 [ " + Thread.currentThread().getName());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            int i = 10 / 0;
+            System.out.println("结束 [ " + Thread.currentThread().getName());
+            return "Sb";
+        }, threadPool).whenCompleteAsync((result,exception)-> {
+            System.out.println("异步任务结束触发回调 [ " + Thread.currentThread().getName());
+            System.out.println("上一级任务结果为： " + result);
+            System.out.println("上一级任务异常为: " + exception);
+        }).exceptionally((exception) -> {return "SB失败";});
 
 
         //当方法执行成功后回调，同步 回调的线程为执行任务的线程
@@ -395,27 +397,27 @@ public class CompletableFutureUse {
 //            System.out.println("上一级任务结果为： " + result);
 //            System.out.println("上一级任务异常为: " + exception);
 //        }).exceptionally((exception) -> {return "SB失败";});
-
+//
 
 
         //使用CompletableFuture设置返回值，同步
-        CompletableFuture completableFuture = CompletableFuture.completedFuture("value");
-        completableFuture.whenComplete((result,exception)-> {
-                    try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("异步任务结束触发回调 [ " + Thread.currentThread().getName());
-            System.out.println("上一级任务结果为： " + result);
-            System.out.println("上一级任务异常为: " + exception);
-        }).exceptionally((exception) -> {return "SB失败";});
-        System.out.println("4");
-        System.out.println("结束++++++++++ [ " + Thread.currentThread().getName());
-
-//        String s = future.get();
-//        System.out.println("---------"+s);
-        System.out.println("3");
+//        CompletableFuture completableFuture = CompletableFuture.completedFuture("value");
+//        completableFuture.whenComplete((result,exception)-> {
+//                    try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println("异步任务结束触发回调 [ " + Thread.currentThread().getName());
+//            System.out.println("上一级任务结果为： " + result);
+//            System.out.println("上一级任务异常为: " + exception);
+//        }).exceptionally((exception) -> {return "SB失败";});
+//        System.out.println("4");
+//        System.out.println("结束++++++++++ [ " + Thread.currentThread().getName());
+//
+////        String s = future.get();
+////        System.out.println("---------"+s);
+//        System.out.println("3");
     }
 
 
