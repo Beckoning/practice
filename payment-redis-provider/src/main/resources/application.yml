@@ -42,7 +42,8 @@ spring:
     is-cluster: true
     #集群
     cluster:
-      nodes: 10.22.31.103:7000,10.22.31.116:7000,10.22.31.123:7000,10.22.31.103:7001,10.22.31.116:7001,10.22.31.123:7001
+#      nodes: 10.22.31.103:7000,10.22.31.116:7000,10.22.31.123:7000,10.22.31.103:7001,10.22.31.116:7001,10.22.31.123:7001
+      nodes: 172.31.228.199:17000,172.31.228.199:17001,172.31.228.199:17002,172.31.228.200:17000,172.31.228.200:17001,172.31.228.200:17002
       #最大重定向次数
       max-redirects: 20
     # 连接超时时间（毫秒）
@@ -57,4 +58,14 @@ spring:
         max-idle: 8
   # 连接池中的最小空闲连接
         min-idle: 0
+    password: UF56vGg9xL60aJQW
 
+
+
+#spring.redis.host=
+#spring.redis.port=
+#spring.redis.password=
+#spring.redis.jedis.pool.max-active=500
+#spring.redis.jedis.pool.max-idle=1000
+#spring.redis.jedis.pool.max-wait=6000ms
+#spring.redis.jedis.pool.min-idle=4

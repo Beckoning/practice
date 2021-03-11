@@ -3,9 +3,14 @@ package com.pay.payment.reids;
 
 import com.pay.payment.redis.center.RedisApplication;
 import com.pay.payment.redis.center.service.RedisService;
+import com.pay.payment.redis.center.service.RedissonService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.Redisson;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
@@ -18,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RedisApplication.class)
@@ -26,6 +32,8 @@ public class RedisTest {
 
     @Resource
     RedisService redisService;
+    @Resource
+    private RedissonService redissonService;
 
     @Resource
     RedisTemplate redisTemplate;
@@ -215,5 +223,29 @@ public class RedisTest {
         System.out.println(redisTemplate.opsForHyperLogLog().size(key1,key));
 
 
+    }
+
+    /**
+     * lock
+     */
+    @Test
+    public void testLock(){
+
+        String recordId = "we";
+        RLock lock = redissonService.getRLock(recordId);
+        try {
+            boolean bs = lock.tryLock(5, 6, TimeUnit.SECONDS);
+            if (bs) {
+                // 业务代码
+                log.info("进入业务代码: " + recordId);
+
+                lock.unlock();
+            } else {
+                Thread.sleep(300);
+            }
+        } catch (Exception e) {
+            log.error("", e);
+            lock.unlock();
+        }
     }
 }
