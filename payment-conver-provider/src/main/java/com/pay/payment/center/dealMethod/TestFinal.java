@@ -1,7 +1,9 @@
 package com.pay.payment.center.dealMethod;
 
 
+
 import java.text.DecimalFormat;
+
 
 /**
  * 测试final修饰 对象
@@ -21,6 +23,11 @@ public class TestFinal {
         System.out.println(FUND_BAL_TMP);
 
         System.out.println(Double.parseDouble("2323.32"));
+
+
+
+
+
     }
 //
     private static EntityExample createFinalEntityExampl(String orderNo) {
