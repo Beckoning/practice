@@ -3,6 +3,9 @@ package com.pay.payment.center.suanfa.lianbiao;
 import java.util.HashSet;
 import java.util.Objects;
 
+/**
+ * 判断链表是否有环
+ */
 public class lianbiaoyouhuan {
 
 

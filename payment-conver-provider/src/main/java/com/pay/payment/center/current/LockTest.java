@@ -1,9 +1,14 @@
 package com.pay.payment.center.current;
 
+import lombok.Data;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Data
 public class LockTest {
+
+    private String m;
 
 
     public static void main(String[] args) {

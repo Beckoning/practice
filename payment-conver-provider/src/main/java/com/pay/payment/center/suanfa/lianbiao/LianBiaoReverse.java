@@ -26,7 +26,7 @@ public class LianBiaoReverse {
 
 
     /**
-     *
+     * 练习递归(O(N))
      * @param head
      * @return
      */
@@ -45,7 +45,7 @@ public class LianBiaoReverse {
 
 
     /**
-     * 头插法
+     * 头插法（O(N)）
      * @param listNode
      * @return
      */
@@ -86,7 +86,7 @@ public class LianBiaoReverse {
 
 
     /**
-     * 就地反转
+     * 就地反转(O(N))
      * @param listNode
      * @return
      */
@@ -110,7 +110,6 @@ public class LianBiaoReverse {
 
         int value;
         ListNode next ;
-        ListNode pre;
 
         public ListNode(int
                                 value) {
@@ -139,7 +138,7 @@ public class LianBiaoReverse {
 
         System.out.println();
 
-        listNode =  reverseList1(list1);
+        listNode =  reverseListByInsert(list1);
         while (Objects.nonNull(listNode)){
             System.out.print(listNode.value +" ");
             listNode = listNode.next;
