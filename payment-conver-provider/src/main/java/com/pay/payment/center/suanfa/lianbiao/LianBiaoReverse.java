@@ -138,7 +138,7 @@ public class LianBiaoReverse {
 
         System.out.println();
 
-        listNode =  reverseListByInsert(list1);
+        listNode =  reverseListByLocal(list1);
         while (Objects.nonNull(listNode)){
             System.out.print(listNode.value +" ");
             listNode = listNode.next;
