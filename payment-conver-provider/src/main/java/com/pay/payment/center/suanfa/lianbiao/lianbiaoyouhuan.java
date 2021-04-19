@@ -14,8 +14,7 @@ public class lianbiaoyouhuan {
         int value;
         ListNode next ;
 
-        public ListNode(int
-                                value) {
+        public ListNode(int value) {
             this.value = value;
         }
     }
