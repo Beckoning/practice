@@ -27,6 +27,7 @@
         <module>payment-dubboProviderTest-provider</module>
         <module>payment-kafka-provider</module>
         <module>payment-es-provider</module>
+        <module>payment-Interview-questions</module>
     </modules>
 
 
