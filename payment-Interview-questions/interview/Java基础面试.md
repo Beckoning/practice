@@ -2,15 +2,39 @@
 [TOC]
 
 ## 一、面向对象
+### 基础
 
-### 1、private修饰的方法可以通过反射访问,那么private的意义是什么? [[参考]](https://www.jianshu.com/p/a328cf491e06)
+
+#### 1、private修饰的方法可以通过反射访问,那么private的意义是什么? [[参考]](https://www.jianshu.com/p/a328cf491e06)
 ```
 private想表达的不是“安全性”的意思，而是OOP的封装概念。
 ```
-### Error、Exception和RuntimeException的区别，作用又是什么？
+#### 2、Error、Exception和RuntimeException的区别，作用又是什么？
 
 ```
 ```
+#### 3、Lambda 与匿名内部类的区别
+
+```
+```
+#### 4、StringBuffer 和StringBuilder、String
+```
+String内部维护的一个final修饰的char[]、说明不可变
+StringBuffer和StringBuilder一个普通的char[] 可以变化
+StringBuffer 线程安全(但是可以锁消除)、StringBuilder线程不安全
+StringBuffer和StringBuilder的toString方法：
+    虽然StringBuffer使用了缓存，但是本质上都一样，每次toString()都会创建一个新的String对象，而不是使用底层的字符数组，
+    所以说底层的字符数组仍然是可有变化的。
+```
+#### 5、并发原子类解决了什么问题
+```
+1、并发问题
+2、ABA问题
+3、CAS 操作的原子性是通过 CPU 单条指令完成而保障的。
+4、当多个线程同时使用 CAS 更新一个变量时，只有一个线程可以更新成功，其他都失败。失败的线程不会被挂起，可以继续重试 CAS，也可以放弃操作  
+```
+
+  
 ## 二、锁机制
 ### synchronized
 
@@ -95,8 +119,29 @@ Java对象头一般占有两个机器码（在32位虚拟机中，1个机器码�
 wait方法的语义有两个，一个是释放当前的对象锁、另一个是使得当前线程进入阻塞队列，而这些操作都和监视器是相关的，所以wait必须要获得一个监视器锁。
 而对于notify来说也是一样，它是唤醒一个线程，既然要去唤醒，首先得知道它在哪里，所以就必须要找到这个对象获取到这个对象的锁，然后到这个对象的等待队列中去唤醒一个线程。
 ```
+#### 8、wait和sleep的区别
+```
+wait和sleep区别在于wait会释放锁， 但是sleep不会释放锁 ，sleep会导致线程阻塞挂起。
+wait/wait(timeout)/notify/notifyAll 方法仅可以在获取到锁后才可以使用。
+```
 
 ### lock 、ReentrantLock
+
+#### 1、ReentrantLock特点
+```
+（1）实现两种方式公平锁、非公平锁
+（2）可重入锁
+（3）可中断
+```
+#### 2、ReentrantLock公平锁加锁流程图
+![avatar](../picture/ReentrantLockFair.jpg)
+#### 3、ReentrantLock中CLH队列流程图
+![avatar](../picture/ReentrantLock-CLH.png)
+
+
+
+
+    
 
 
 
