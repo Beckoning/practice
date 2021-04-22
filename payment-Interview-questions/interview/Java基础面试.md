@@ -4,20 +4,20 @@
 ## 一、面向对象
 ### 基础
 
-
-#### 1、private修饰的方法可以通过反射访问,那么private的意义是什么? [[参考]](https://www.jianshu.com/p/a328cf491e06)
-```
-private想表达的不是“安全性”的意思，而是OOP的封装概念。
-```
-#### 2、Error、Exception和RuntimeException的区别，作用又是什么？
+#### 1、Error、Exception和RuntimeException的区别，作用又是什么？
 
 ```
 ```
-#### 3、Lambda 与匿名内部类的区别
+
+#### 2、Lambda 与匿名内部类的区别 [[参考]](https://blog.csdn.net/u013096088/article/details/70475981?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control)
+```
+1、匿名内部类表达式会确保创建一个拥有唯一标识的新对象，而lambda表达式的计算机结果可能有，也可能没有唯一标识，这取决于具体实现。
+   相对于对应的内部类来说，这种灵活性可以让平台使用更为高效的实现策略。
+2、内部类的声明会创建一个新的命名作用域，在这个作用域中，this与super指的是内部类本身的当前实例；相反，lambda表达式并不会引入任何新的命名环境。
+    这样就避免了内部类名称查找的复杂性，名称查找会导致很多小错误，例如想要调用外围实例方法时却错误地调用了内部类实例的Object方法
 
 ```
-```
-#### 4、StringBuffer 和StringBuilder、String
+#### 3、StringBuffer 和StringBuilder、String
 ```
 String内部维护的一个final修饰的char[]、说明不可变
 StringBuffer和StringBuilder一个普通的char[] 可以变化
@@ -26,15 +26,52 @@ StringBuffer和StringBuilder的toString方法：
     虽然StringBuffer使用了缓存，但是本质上都一样，每次toString()都会创建一个新的String对象，而不是使用底层的字符数组，
     所以说底层的字符数组仍然是可有变化的。
 ```
-#### 5、并发原子类解决了什么问题
+#### 4、并发原子类解决了什么问题
 ```
 1、并发问题
 2、ABA问题
 3、CAS 操作的原子性是通过 CPU 单条指令完成而保障的。
 4、当多个线程同时使用 CAS 更新一个变量时，只有一个线程可以更新成功，其他都失败。失败的线程不会被挂起，可以继续重试 CAS，也可以放弃操作  
 ```
+#### 5、volatile关键字的理解？
 
-  
+```
+volatile可以保证内存的可见性，禁止指令重排
+volatile写的内存语义：
+    当写一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值刷新到主内存。
+volatile读的内存语义：
+    当读一个 volatile 变量时，JMM 会把该线程对应的本地内存置为无效。线程接下来将从主内存中读取共享变量      
+```
+#### 6、volatile如何保证禁止指令重排？
+```
+​1、写入volatile变量之前的读/写操作被保证 “happen before” 写入volatile变量。
+   发生在写入volatile变量之后的读/写操作依然可以重排序到写入volatile变量前，
+2、如果读/写操作最初发生在读取volatile变量之后，则读取/写入其他变量不能重排序到发生在读取volatile变量之前。
+   发生在读取volatile变量之前的读/写操作依然可以重排序到读取volatile变量后
+```
+| 是否能重排序| 第二个操作 | 第二个操作 | 第二个操作 |
+| :----:| :----:| :----: | :----: |
+| 第一个操作 | 普通读/写 | volatile读 |volatile写 |
+| 普通读/写 | YES | YES |NO |
+| volatile读 | NO | NO |NO |
+| volatile写 | YES | NO |NO |
+
+```
+总结：
+当第二个操作为volatile写操作时,不管第一个操作是什么(普通读写或者volatile读写),都不能进行重排序。这个规则确保volatile写之前的所有操作都不会被重排序到volatile写之后;
+当第一个操作为volatile读操作时,不管第二个操作是什么,都不能进行重排序。这个规则确保volatile读之后的所有操作都不会被重排序到volatile读之前;
+当第一个操作是volatile写操作时,第二个操作是volatile读操作,不能进行重排序
+```
+#### 7、ThreadLocal变量？
+##### ThreadLocal引用链 图中的虚线表示弱引用。
+
+![avatar](../picture/threadlocal.png)
+```
+ThreadLocal.ThreadLocalMap  key为Thread对象（虚引用） Value表示存放的值
+threadlocal:线程独享的空间,用户线程的临时存储,  
+存在的问题：
+    如果线程一直运行，由于key是弱引用，因此发生一次GCkey就会发生回收，但是Value却回收不了因此会出现内存溢出， 所以使用完需要将数据移除掉,不然会出现内存溢出
+```
 ## 二、锁机制
 ### synchronized
 
@@ -133,10 +170,84 @@ wait/wait(timeout)/notify/notifyAll 方法仅可以在获取到锁后才可以�
 （2）可重入锁
 （3）可中断
 ```
-#### 2、ReentrantLock公平锁加锁流程图
+#### 2、ReentrantLock公平锁加锁流程图  [[参考]](https://blog.csdn.net/qq_30257149/article/details/99588688)
 ![avatar](../picture/ReentrantLockFair.jpg)
 #### 3、ReentrantLock中CLH队列流程图
 ![avatar](../picture/ReentrantLock-CLH.png)
+
+
+## 三、集合
+#### 1、hashMap put方法流程？
+![avatar](../picture/hashMap.png)
+
+#### 2、hashMap 1.7-1.8的区别？
+```
+1、Java1.7用的是头插法，而Java1.8采用的是尾插法，因为java1.7使用但链表纵向延伸，当采用头插法是可以提高插入效率，但是也容易出现逆序切环形链表
+    死循环问题，但是Java1.8之后是因为加入了红黑树使用尾插法，能够避免出现逆序切链表死循环问题
+2、扩容后数据存储位置的计算方式不一样
+   Java1.7直接使用的hash值和需要扩容的二进制进行&操作，java1.8采用啦Java1.7的计算方式，也就是扩容前的原始位置+扩容的大小值=Java1.8的计算方式，
+    这中方式只需要判断hash的新增参与运算的位是0还是1就可以计算出扩容后的位置
+3、Java1.7使用的是数组+单链表数据结构，Java1.8之后采用的是数组+链表+红黑树的数据结构（当链表深度达到8时，就会自动扩容把链表转换成红黑树 
+    时间复杂度从O(n)变成O(logN)提高了查询效率）
+
+```
+
+#### 3、hashmap初始化容量应该设置成多少合适？
+```
+当HashMap内部维护的哈希表的容量达到75%时（默认情况下），会触发rehash，而rehash的过程是比较耗费时间的,所以初始化容量要设置成expectedSize/0.75 + 1的话，可以有效的减少冲突也可以减小误差.
+```
+#### 4、hashMap key值选取？
+```
+String, Interger这样的wrapper类作为HashMap的键是再适合不过了，而且String最为常用。因为String是不可变的，比如你放进去的key是"str1"，那就永远是"str1"，不会又变成"str2"，但如果放进去的是一个对象，那万一这个对象里的属性变了，那不就改变key了。
+```
+#### 5、hashMap 和hashtable区别？
+```
+1、是否加锁
+2、hashmap的key可以为空 
+3、迭代器hashMap是fail-fast 在遍历元素的时候删除、新增数据，将会抛出ConcurrentModificationException
+``` 
+#### 6、ConcurrentHashMap的size方法？
+``` 
+1、分析一下 sumCount() 代码。ConcurrentHashMap 提供了 baseCount、counterCells 两个辅助变量和一个 CounterCell 辅助内部类。
+    sumCount() 就是迭代 counterCells 来统计 sum 的过程。 put 操作时，肯定会影响 size()，在 put() 方法最后会调用 addCount() 方法。
+2、addCount() 代码如下：
+     如果 counterCells == null, 则对 baseCount 做 CAS 自增操作。
+     如果并发导致 baseCount CAS 失败了使用 counterCells。
+     如果counterCells CAS 失败了，在 fullAddCount 方法中，会继续死循环操作，直到成功。
+3、然后，CounterCell 这个类到底是什么？我们会发现它使用了 @sun.misc.Contended 标记的类，内部包含一个 volatile 变量。
+    @sun.misc.Contended 这个注解标识着这个类防止需要防止 “伪共享”。那么，什么又是伪共享呢？
+
+缓存行介绍(延伸的知识):
+   缓存系统中是以缓存行（cacheline）为单位存储的。缓存行是2的整数幂个连续字节，一般为32-256个字节。最常见的缓存行大小是64个字节。当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。
+``` 
+#### 7、HashMap的长度为什么要是2的n次方？
+```
+HashMap为了存取高效，要尽量较少碰撞，就是要尽量把数据分配均匀，每个链表长度大致相同，
+这个实现就在把数据存到哪个链表中的算法，这个算法实际就是取模，hash%length，计算机中直接求余效率不如位移运算，源码中做了优化hash&(length-1)，
+hash%length==hash&(length-1)的前提是length是2的n次方；
+为什么这样能均匀分布减少碰撞呢？2的n次方实际就是1后面n个0，2的n次方-1  实际就是n个1；
+    例如长度为9时候，3&(9-1)=0  2&(9-1)=0 ，都在0上，碰撞了；
+    例如长度为8时候，3&(8-1)=3  2&(8-1)=2 ，不同位置上，不碰撞；
+```
+#### 8、为什么要将链表中转红黑树的阈值设为8
+```
+1、每次遍历一个链表，平均查找的时间复杂度是 O(n)，n 是链表的长度。红黑树有和链表不一样的查找性能，由于红黑树有自平衡的特点，可以防止不平衡情况
+    的发生，所以可以始终将查找的时间复杂度控制在 O(log(n))。最初链表还不是很长，所以可能 O(n) 和 O(log(n)) 的区别不大，但是如果链表越来越长，
+    那么这种区别便会有所体现。所以为了提升查找性能，需要把链表转化为红黑树的形式。
+2、还要注意很重要的一点，单个 TreeNode 需要占用的空间大约是普通 Node 的两倍，所以只有当包含足够多的 Nodes 时才会转成 TreeNodes，而是否足
+    够多就是由 TREEIFY_THRESHOLD 的值决定的。而当桶中节点数由于移除或者 resize 变少后，又会变回普通的链表的形式，以便节省空间。
+3、默认是链表长度达到 8 就转成红黑树，而当长度降到 6 就转换回去，这体现了 时间和空间平衡的思想，最开始使用链表的时候，空间占用是比较少的，
+    而且由于链表短，所以查询时间也没有太大的问题。可是当链表越来越长，需要用红黑树的形式来保证查询的效率。
+总结：
+    如果开发中发现 HashMap 内部出现了红黑树的结构，那可能是我们的哈希算法出了问题，所以需要选用合适的hashCode方法，以便减少冲突。
+    事实上，链表长度超过 8 就转为红黑树的设计，更多的是为了防止用户自己实现了不好的哈希算法时导致链表过长，从而导致查询效率低，而此时转为红黑树更多的是一种保底策略，用来保证极端情况下查询的效率。
+
+```
+
+
+```
+```
+
 
 
 
