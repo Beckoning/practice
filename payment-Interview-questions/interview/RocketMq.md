@@ -1,5 +1,4 @@
-# Java rocketMq
-[TOC]
+# RocketMq
 
 ## 一、rocketMq
 ### 基础

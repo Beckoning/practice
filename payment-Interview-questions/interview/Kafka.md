@@ -1,5 +1,4 @@
-# Java kafka
-[TOC]
+# kafka
 
 ## 一、kafka
 ### 基础

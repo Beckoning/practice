@@ -1,5 +1,4 @@
 # Redis
-[TOC]
 
 ## 一、Redis
 ### 基础
