@@ -9,10 +9,28 @@ public class TestYinYong {
 
     public static void main(String[] args) {
 
-        Person person = new Person("22");
-        System.out.println(person.getName());
-        printA(person);
-        System.out.println(person.getName());
+//        Person person = new Person("22");
+//        System.out.println(person.getName());
+//        printA(person);
+//        System.out.println(person.getName());
+//        int num = 1;
+//        System.out.println(num);
+//        printB(num);
+//        System.out.println(num);
+
+        String a = new String("kin").intern();
+        String b = new String("kin").intern();
+        String c = "kin";
+        String e = new String("kin");
+
+
+        System.out.println(a == b);
+        System.out.println(a == c);
+        System.out.println(a == e);
+
+
+
+
 
 
     }
@@ -22,6 +40,11 @@ public class TestYinYong {
         person.setName("333");
 
     }
+
+    public static void printB(int num) {
+        num ++;
+    }
+
 
 
 }
