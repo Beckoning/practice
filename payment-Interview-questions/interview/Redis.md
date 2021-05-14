@@ -124,7 +124,12 @@ key对应的数据存在，但在redis中过期，此时若有大量并发请求
 #### 19、 redis跳表:
 ```
 ```
-  
+
+### 20、 reids底层数据结构的实现[[参考]](https://blog.csdn.net/AmyZheng_/article/details/108788468)
+```
+
+```
+
 
 
 
