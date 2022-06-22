@@ -1,2 +1,0 @@
-spiService = com.pay.payment.dubboprovider.center.servcie.impl.SpiServiceImpl
-spiTwoService = com.pay.payment.dubboprovider.center.servcie.impl.SpiTwoServiceImpl
